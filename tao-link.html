@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>Tạo link thiệp mời</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@1,300;1,400&family=Jost:wght@400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=20260925162630" />
+  <style>
+    .gen { max-width: 960px; margin: 0 auto; padding: 48px var(--gutter) 96px; }
+    .gen h1 { font-family: var(--serif); font-style: italic; font-weight: 300; font-size: clamp(48px, 9vw, 96px); line-height: 1; margin: 12px 0 8px; }
+    .gen p.lead { color: var(--ink-soft); margin: 0 0 40px; }
+    .card { background: var(--paper); border: 1px solid var(--ink); border-radius: 20px; padding: clamp(18px, 3vw, 28px); margin-bottom: 24px; }
+    .card h2 { margin: 0 0 16px; font-size: 16px; font-weight: 600; }
+    label { display: block; font-size: 13px; font-weight: 500; margin: 0 0 6px; }
+    input, select, textarea {
+      width: 100%; font: 400 15px/1.5 var(--sans); color: var(--ink); background: #fff;
+      border: 1px solid var(--ink); border-radius: 12px; padding: 11px 14px; min-height: 46px;
+    }
+    textarea { min-height: 180px; resize: vertical; font-family: ui-monospace, Menlo, monospace; font-size: 14px; }
+    .row { display: grid; gap: 14px; grid-template-columns: 1fr; }
+    @media (min-width: 640px) { .row--2 { grid-template-columns: 2fr 1fr; } }
+    .hint { font-size: 13px; color: var(--ink-soft); margin: 8px 0 0; }
+    .hint code { background: rgba(26,26,26,.08); padding: 1px 6px; border-radius: 6px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+    th { font-weight: 600; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+    td.link { word-break: break-all; color: var(--ink-soft); font-size: 12px; }
+    .mini { min-height: 36px; padding: 6px 14px; font-size: 12px; }
+    .tbl-wrap { overflow-x: auto; }
+    .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--ink); color: var(--lime); border-radius: 999px; padding: 10px 20px; font-size: 14px; opacity: 0; transition: opacity .3s; pointer-events: none; }
+    .toast.on { opacity: 1; }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "./js/app.js": "./js/app.js?v=20260925162630",
+        "./js/campus-data.js": "./js/campus-data.js?v=20260925162630",
+        "./js/campus-routes.js": "./js/campus-routes.js?v=20260925162630",
+        "./js/config.js": "./js/config.js?v=20260925162630",
+        "./js/fx.js": "./js/fx.js?v=20260925162630",
+        "./js/guest.js": "./js/guest.js?v=20260925162630",
+        "./js/map3d.js": "./js/map3d.js?v=20260925162630"
+      }
+    }
+  </script>
+</head>
+<body>
+  <main class="gen">
+    <p class="eyebrow">Graduation Invitation · công cụ</p>
+    <h1>Tạo link mời</h1>
+    <p class="lead">Mỗi khách một link riêng, thiệp sẽ hiện đúng tên và cách xưng hô.</p>
+
+    <section class="card">
+      <h2>Địa chỉ trang thiệp</h2>
+      <label for="base">URL gốc (tự điền khi mở trang này trên web đã deploy)</label>
+      <input id="base" type="url" />
+      <p class="hint">Mẫu tin nhắn — <code>{ten}</code> sẽ được thay bằng tên khách, <code>{link}</code> bằng đường link:</p>
+      <textarea id="tpl" style="min-height:90px"></textarea>
+    </section>
+
+    <section class="card">
+      <h2>Một khách</h2>
+      <div class="row row--2">
+        <div><label for="one-name">Tên hiển thị</label><input id="one-name" placeholder="vd. Anh Minh, Gia đình cô Lan" /></div>
+        <div><label for="one-rel">Quan hệ / xưng hô</label><select id="one-rel"></select></div>
+      </div>
+      <div style="margin-top:14px">
+        <label for="one-photo">Ảnh khách (tuỳ chọn)</label>
+        <input id="one-photo" placeholder="vd. minh.jpg — file đặt trong images/guests/ — hoặc link https://…" />
+        <p class="hint">Ảnh hiện tròn trên phong bì và thành tấm polaroid trong phần Lời nhắn. Nên dùng ảnh dọc, khoảng 800×1000 px.</p>
+      </div>
+      <div class="actions" style="margin-top:18px">
+        <button class="btn" id="one-copy" type="button">Copy link</button>
+        <button class="btn btn--ghost" id="one-msg" type="button">Copy tin nhắn</button>
+        <a class="btn btn--ghost" id="one-open" target="_blank" rel="noopener">Xem thử</a>
+      </div>
+      <p class="hint" id="one-out"></p>
+    </section>
+
+    <section class="card">
+      <h2>Nhiều khách</h2>
+      <label for="bulk">Mỗi dòng một khách: <code>Tên | quan hệ | ảnh</code> (quan hệ và ảnh có thể bỏ trống)</label>
+      <textarea id="bulk" placeholder="Anh Minh | anh | minh.jpg&#10;Chị Hà | chi&#10;Bố Mẹ | bome | bome.jpg&#10;Tuấn | ban&#10;Thầy Hùng | thay"></textarea>
+      <p class="hint" id="rel-hint"></p>
+      <div class="actions" style="margin-top:14px">
+        <button class="btn" id="bulk-go" type="button">Tạo danh sách</button>
+        <button class="btn btn--ghost" id="bulk-copy" type="button" hidden>Copy tất cả (dán vào Excel/Sheets)</button>
+      </div>
+      <div class="tbl-wrap"><table id="bulk-out" hidden>
+        <thead><tr><th>Tên</th><th>Xưng hô</th><th>Ảnh</th><th>Link</th><th></th></tr></thead><tbody></tbody>
+      </table></div>
+    </section>
+  </main>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script type="module">
+    import config, { relations } from './js/config.js';
+    import { buildLink, cleanName, cleanPhoto } from './js/guest.js';
+    const $ = (s) => document.querySelector(s);
+
+    const here = new URL('./', location.href);
+    $('#base').value = here.protocol.startsWith('http') ? here.href : 'https://your-site.vercel.app/';
+    $('#tpl').value = `Gửi {ten}, mình sắp tốt nghiệp rồi! Mời bạn đến chung vui cùng mình ngày ${config.ceremony.dateLabel} tại ${config.venue.hall} Bách khoa nhé 🎓\n{link}`;
+
+    const opts = [['', 'Mặc định (bạn / mình)'], ...Object.entries(relations).map(([k, r]) => [k, `${r.label} — ${k}`])];
+    $('#one-rel').innerHTML = opts.map(([k, l]) => `<option value="${k}">${l}</option>`).join('');
+    $('#rel-hint').innerHTML = 'Mã quan hệ: ' + Object.entries(relations).map(([k, r]) => `<code>${k}</code> ${r.label}`).join(' · ');
+
+    const toast = (t) => { const el = $('#toast'); el.textContent = t; el.classList.add('on'); setTimeout(() => el.classList.remove('on'), 1600); };
+    const copy = async (text, msg = 'Đã copy!') => {
+      try { await navigator.clipboard.writeText(text); }
+      catch { const ta = Object.assign(document.createElement('textarea'), { value: text }); document.body.append(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+      toast(msg);
+    };
+    const photoParam = (raw) => (cleanPhoto(raw) ? raw.trim() : '');
+    const link = (name, rel, photo = '') => buildLink($('#base').value || here.href, cleanName(name), rel, photoParam(photo));
+    const message = (name, url) => $('#tpl').value.replaceAll('{ten}', name || 'bạn').replaceAll('{link}', url);
+
+    const refreshOne = () => {
+      const url = link($('#one-name').value, $('#one-rel').value, $('#one-photo').value);
+      $('#one-out').textContent = url; $('#one-open').href = url;
+      return url;
+    };
+    ['input', 'change'].forEach((ev) => { $('#one-name').addEventListener(ev, refreshOne); $('#one-rel').addEventListener(ev, refreshOne); $('#one-photo').addEventListener(ev, refreshOne); $('#base').addEventListener(ev, refreshOne); });
+    refreshOne();
+    $('#one-copy').onclick = () => copy(refreshOne());
+    $('#one-msg').onclick = () => copy(message(cleanName($('#one-name').value), refreshOne()), 'Đã copy tin nhắn!');
+
+    let rows = [];
+    $('#bulk-go').onclick = () => {
+      rows = $('#bulk').value.split('\n').map((l) => l.trim()).filter(Boolean).map((l) => {
+        const [n, r = '', ph = ''] = l.split('|').map((s) => s.trim());
+        const rel = relations[r.toLowerCase()] ? r.toLowerCase() : '';
+        const name = cleanName(n);
+        return { name, rel, photo: photoParam(ph), url: link(name, rel, ph) };
+      });
+      const tb = $('#bulk-out tbody');
+      tb.replaceChildren(...rows.map((r) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td></td><td>${r.rel ? relations[r.rel].label : '—'}</td><td></td><td class="link"></td>
+          <td style="white-space:nowrap"><button class="btn mini" data-a="link">Link</button> <button class="btn btn--ghost mini" data-a="msg">Tin nhắn</button></td>`;
+        tr.cells[0].textContent = r.name; tr.cells[2].textContent = r.photo || '—'; tr.cells[3].textContent = r.url;
+        tr.querySelector('[data-a=link]').onclick = () => copy(r.url);
+        tr.querySelector('[data-a=msg]').onclick = () => copy(message(r.name, r.url), 'Đã copy tin nhắn!');
+        return tr;
+      }));
+      $('#bulk-out').hidden = rows.length === 0;
+      $('#bulk-copy').hidden = rows.length === 0;
+    };
+    $('#bulk-copy').onclick = () => copy(rows.map((r) => `${r.name}\t${r.url}\t${message(r.name, r.url).replace(/\n/g, ' ')}`).join('\n'), `Đã copy ${rows.length} dòng!`);
+  </script>
+</body>
+</html>

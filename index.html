@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Graduation Invitation · 27.09.2026</title>
+  <meta name="description" content="Thư mời dự lễ tốt nghiệp tại Nhà C2, Đại học Bách khoa Hà Nội." />
+  <meta name="theme-color" content="#e1ff00" />
+  <meta property="og:title" content="Graduation Invitation · 27.09.2026" />
+  <meta property="og:description" content="Trân trọng kính mời bạn đến chung vui trong lễ tốt nghiệp tại Nhà C2, Đại học Bách khoa Hà Nội." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="images/og.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%23e1ff00'/%3E%3Cpath d='M8 26 32 16l24 10-24 10z' fill='%231a1a1a'/%3E%3Cpath d='M18 31v10c0 4 7 7 14 7s14-3 14-7V31l-14 6z' fill='%231a1a1a'/%3E%3C/svg%3E" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,300;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=20260925162630" />
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/",
+        "./js/app.js": "./js/app.js?v=20260925162630",
+        "./js/campus-data.js": "./js/campus-data.js?v=20260925162630",
+        "./js/campus-routes.js": "./js/campus-routes.js?v=20260925162630",
+        "./js/config.js": "./js/config.js?v=20260925162630",
+        "./js/fx.js": "./js/fx.js?v=20260925162630",
+        "./js/guest.js": "./js/guest.js?v=20260925162630",
+        "./js/map3d.js": "./js/map3d.js?v=20260925162630"
+      }
+    }
+  </script>
+  <!-- Hiệu ứng cuộn: nếu CDN lỗi, trang vẫn chạy với hiệu ứng cơ bản -->
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.3.4/dist/lenis.min.js"></script>
+</head>
+<body class="is-locked">
+
+  <div class="progress" aria-hidden="true"><i></i></div>
+
+  <!-- ====== Phong bì ====== -->
+  <div class="envelope" id="envelope" aria-modal="true" role="dialog" aria-labelledby="env-to">
+    <div class="envelope__half envelope__half--top"></div>
+    <div class="envelope__half envelope__half--bottom"></div>
+    <div class="envelope__content">
+      <div class="envelope__avatar" id="env-avatar" hidden></div>
+      <p class="eyebrow">Graduation Invitation</p>
+      <p class="envelope__to" id="env-to">To. <span data-guest>Quý khách</span></p>
+      <p class="envelope__sub">Thư mời dự lễ tốt nghiệp của<br /><strong data-grad-name></strong></p>
+      <button class="seal" id="open-btn" type="button">
+        <span class="seal__ring" aria-hidden="true">
+          <svg viewBox="0 0 120 120"><defs><path id="seal-c" d="M60 60m-46 0a46 46 0 1 1 92 0a46 46 0 1 1-92 0"/></defs>
+            <text><textPath href="#seal-c">OPEN THE INVITATION · MỞ THIỆP · OPEN THE INVITATION · </textPath></text></svg>
+        </span>
+        <span class="seal__label">Mở thiệp</span>
+      </button>
+    </div>
+  </div>
+
+  <main>
+    <!-- ====== Hero ====== -->
+    <section class="hero" id="top">
+      <div class="hero__meta">
+        <span>HUST</span><span data-date>27.09.2026</span>
+      </div>
+      <h1 class="hero__title">
+        <span class="hero__line reveal">Graduation</span>
+        <span class="hero__line hero__line--indent reveal">Ceremony</span>
+      </h1>
+      <div class="hero__body">
+        <div class="hero__portrait reveal" id="portrait">
+          <div class="monogram" aria-hidden="true"><span data-initials>BQ</span></div>
+        </div>
+        <div class="hero__text reveal">
+          <p class="hero__greet"><span data-greet>Trân trọng kính mời</span></p>
+          <p class="hero__guest" data-guest>Quý khách</p>
+          <p class="hero__lead">đến dự lễ tốt nghiệp của</p>
+          <p class="hero__name" data-grad-name></p>
+          <p class="hero__degree" data-degree hidden></p>
+        </div>
+      </div>
+      <a class="scroll-cue" href="#kinetic"><span>Scroll</span><i></i></a>
+      <div class="badge" aria-hidden="true">
+        <svg viewBox="0 0 120 120"><defs><path id="badge-c" d="M60 60m-44 0a44 44 0 1 1 88 0a44 44 0 1 1-88 0"/></defs>
+          <text><textPath href="#badge-c">CLASS OF 2026 · BÁCH KHOA HÀ NỘI · CLASS OF 2026 · </textPath></text></svg>
+        <span class="badge__cap">
+          <svg viewBox="0 0 64 64"><path d="M4 24 32 12l28 12-28 12z"/><path d="M16 30v11c0 4 7 8 16 8s16-4 16-8V30l-16 7z"/><path d="M56 26v14" stroke="currentColor" stroke-width="2.5" fill="none"/></svg>
+        </span>
+      </div>
+      <i class="slide__shade" aria-hidden="true"></i>
+    </section>
+
+    <div class="marquee" aria-hidden="true"><div class="marquee__track" id="marquee"></div></div>
+
+    <!-- ====== Vòng chữ 3D ====== -->
+    <section class="kinetic" id="kinetic" aria-label="Save the date">
+      <div class="kinetic__stage">
+        <div class="ring ring--a" aria-hidden="true" data-text="GRADUATION CEREMONY · CLASS OF 2026 · "></div>
+        <div class="kinetic__center">
+          <p class="eyebrow">Save the date</p>
+          <p class="kinetic__date" id="kinetic-date">27.09</p>
+          <p class="kinetic__meta" id="kinetic-meta">2026 · 9:30 · Nhà C2</p>
+        </div>
+        <div class="ring ring--b" aria-hidden="true" data-text="BÁCH KHOA HÀ NỘI · NHÀ C2 · HANOI · "></div>
+      </div>
+    </section>
+
+    <!-- ====== Lời nhắn ====== -->
+    <section class="slide slide--paper" id="message">
+      <div class="slide__inner">
+        <div class="section">
+          <header class="section__head reveal">
+            <span class="section__no">01</span>
+            <h2 class="section__title">Message</h2>
+            <p class="section__sub">Lời nhắn</p>
+          </header>
+          <div class="message__grid">
+            <figure class="polaroid" id="guest-photo" hidden>
+              <div class="polaroid__card">
+                <div class="polaroid__img"></div>
+                <figcaption class="polaroid__cap"><span id="polaroid-cap"></span><small data-date></small></figcaption>
+              </div>
+            </figure>
+            <div class="message__body reveal">
+              <p class="message__hello">Gửi <span data-guest-call>bạn</span> thân mến,</p>
+              <p class="message__text" id="message-text"></p>
+              <p class="message__sign">— <span data-grad-name></span></p>
+            </div>
+          </div>
+        </div>
+        <i class="slide__shade" aria-hidden="true"></i>
+      </div>
+    </section>
+
+    <!-- ====== Thông tin ====== -->
+    <section class="slide slide--lime" id="info">
+      <div class="slide__inner">
+        <div class="section">
+          <header class="section__head reveal">
+            <span class="section__no">02</span>
+            <h2 class="section__title">Information</h2>
+            <p class="section__sub">Thời gian &amp; địa điểm</p>
+          </header>
+
+          <dl class="info__grid">
+            <div class="info__item reveal">
+              <dt>Date</dt>
+              <dd><span class="info__big" data-date>27.09.2026</span><span class="info__note" data-weekday>Chủ nhật</span></dd>
+            </div>
+            <div class="info__item reveal">
+              <dt>Time</dt>
+              <dd><span class="info__big" data-time>9:30 — 11:30</span><span class="info__note">Có mặt sớm 15 phút để chụp ảnh nhé</span></dd>
+            </div>
+            <div class="info__item reveal">
+              <dt>Place</dt>
+              <dd><span class="info__big" data-hall>Nhà C2</span><span class="info__note"><span data-university></span><br /><span data-address></span></span></dd>
+            </div>
+          </dl>
+
+          <div class="actions reveal">
+            <a class="btn" id="gcal" target="_blank" rel="noopener">Thêm vào Google Calendar</a>
+            <button class="btn btn--ghost" id="ics" type="button">Tải file lịch (.ics)</button>
+          </div>
+
+          <div class="countdown reveal" id="countdown" aria-live="polite">
+            <p class="countdown__label">Countdown</p>
+            <div class="countdown__grid">
+              <div><span data-cd="d">00</span><small>Ngày</small></div>
+              <div><span data-cd="h">00</span><small>Giờ</small></div>
+              <div><span data-cd="m">00</span><small>Phút</small></div>
+              <div><span data-cd="s">00</span><small>Giây</small></div>
+            </div>
+            <p class="countdown__done" id="countdown-done" hidden></p>
+          </div>
+        </div>
+        <i class="slide__shade" aria-hidden="true"></i>
+      </div>
+    </section>
+
+    <!-- ====== Bản đồ 3D ====== -->
+    <section class="slide slide--paper" id="access">
+      <div class="slide__inner">
+        <div class="section">
+          <header class="section__head reveal">
+            <span class="section__no">03</span>
+            <h2 class="section__title">Access</h2>
+            <p class="section__sub">Đường đi &amp; gửi xe · bản đồ 3D</p>
+          </header>
+
+          <div class="map reveal" id="map" data-lenis-prevent>
+            <div class="map__canvas" id="map-canvas"></div>
+            <div class="map__loading" id="map-loading">Đang dựng bản đồ 3D…</div>
+            <button class="map__lock" id="map-lock" type="button" hidden>
+              <span>Chạm để xoay &amp; phóng to bản đồ</span>
+            </button>
+            <div class="map__hud">
+              <div class="compass" id="compass" title="Hướng Bắc"><span>N</span></div>
+              <button class="map__icon" id="map-reset" type="button" title="Về toàn cảnh" aria-label="Về toàn cảnh">
+                <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+              </button>
+              <button class="map__icon" id="map-full" type="button" title="Phóng to" aria-label="Phóng to bản đồ">
+                <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+              </button>
+            </div>
+            <div class="map__tip" id="map-tip" hidden></div>
+          </div>
+
+          <div class="routes reveal" role="tablist" aria-label="Chọn cách di chuyển" id="route-tabs">
+            <button role="tab" data-route="overview" aria-selected="true">Toàn cảnh</button>
+            <button role="tab" data-route="motoD35">Xe máy · Bãi D3-5</button>
+            <button role="tab" data-route="motoD4">Xe máy · Bãi D4</button>
+            <button role="tab" data-route="motoB7">Xe máy · Hầm B7</button>
+            <button role="tab" data-route="motoB1">Xe máy · Nhà xe B1</button>
+            <button role="tab" data-route="car">Ô tô · Taxi</button>
+          </div>
+
+          <div class="route-info reveal" id="route-info"></div>
+
+          <div class="actions reveal">
+            <a class="btn" data-map-url target="_blank" rel="noopener">Chỉ đường Google Maps</a>
+          </div>
+          <p class="credit">Bản đồ dựng từ dữ liệu © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>. Vị trí bãi xe là tương đối.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== Ảnh ====== -->
+    <section class="slide slide--ink" id="gallery" hidden>
+      <div class="slide__inner">
+        <div class="section">
+          <header class="section__head reveal">
+            <span class="section__no">04</span>
+            <h2 class="section__title">Moments</h2>
+            <p class="section__sub">Khoảnh khắc</p>
+          </header>
+          <div class="gallery__grid" id="gallery-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== RSVP ====== -->
+    <section class="slide slide--lime" id="rsvp">
+      <div class="slide__inner">
+        <div class="section rsvp">
+          <header class="section__head reveal">
+            <span class="section__no" id="rsvp-no">04</span>
+            <h2 class="section__title">R.S.V.P.</h2>
+            <p class="section__sub">Xác nhận tham dự</p>
+          </header>
+          <p class="rsvp__q reveal" id="rsvp-q" data-fx></p>
+          <div class="note reveal" id="note" hidden>
+            <svg class="note__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+            <p><span class="note__label">Note</span><span id="note-text"></span></p>
+          </div>
+          <div class="actions reveal">
+            <button class="btn btn--big" id="rsvp-btn" type="button">Xác nhận tham dự</button>
+          </div>
+          <p class="rsvp__thanks" id="rsvp-thanks" hidden></p>
+          <div class="actions reveal" id="contact" hidden>
+            <a class="btn btn--ghost" id="call-btn">Gọi điện</a>
+            <a class="btn btn--ghost" id="zalo-btn" target="_blank" rel="noopener">Nhắn Zalo</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p class="footer__thanks" id="footer-thanks">Thank you</p>
+      <p class="footer__script">See you at the ceremony</p>
+      <p class="footer__meta"><span data-grad-name></span> · <span data-date></span> · HUST</p>
+    </footer>
+  </main>
+
+  <script type="module" src="js/app.js?v=20260925162630"></script>
+</body>
+</html>
