@@ -74,7 +74,7 @@ a { color: inherit; }
 .seal {
   position: relative; width: 132px; height: 132px; border-radius: 50%;
   border: 0; background: var(--lime); color: var(--ink); cursor: pointer;
-  display: grid; place-items: center;
+  display: grid; place-items: center; margin: 0 auto; padding: 0;
   transition: transform .4s var(--ease);
 }
 .seal:hover { transform: scale(1.06); }
