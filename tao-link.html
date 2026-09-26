@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@1,300;1,400&family=Jost:wght@400&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=20260926083431" />
+  <link rel="stylesheet" href="css/style.css?v=20260926084746" />
   <style>
     .gen { max-width: 960px; margin: 0 auto; padding: 48px var(--gutter) 96px; }
     .gen h1 { font-family: var(--serif); font-style: italic; font-weight: 300; font-size: clamp(48px, 9vw, 96px); line-height: 1; margin: 12px 0 8px; }
@@ -31,19 +31,28 @@
     td.link { word-break: break-all; color: var(--ink-soft); font-size: 12px; }
     .mini { min-height: 36px; padding: 6px 14px; font-size: 12px; }
     .tbl-wrap { overflow-x: auto; }
+    .photo-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .photo-row input[type=url], .photo-row #one-photo { flex: 1 1 260px; }
+    .thumb { width: 56px; height: 70px; border-radius: 8px; object-fit: cover; border: 1px solid var(--ink); background: #f3f3f3; flex: none; }
+    .thumb-sm { width: 36px; height: 45px; border-radius: 6px; object-fit: cover; border: 1px solid var(--line); vertical-align: middle; margin-right: 6px; }
+    .status { font-size: 13px; margin: 8px 0 0; min-height: 1.2em; }
+    .status.err { color: #c62828; }
+    .file-btn { position: relative; overflow: hidden; }
+    .file-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
     .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--ink); color: var(--lime); border-radius: 999px; padding: 10px 20px; font-size: 14px; opacity: 0; transition: opacity .3s; pointer-events: none; }
     .toast.on { opacity: 1; }
   </style>
   <script type="importmap">
     {
       "imports": {
-        "./js/app.js": "./js/app.js?v=20260926083431",
-        "./js/campus-data.js": "./js/campus-data.js?v=20260926083431",
-        "./js/campus-routes.js": "./js/campus-routes.js?v=20260926083431",
-        "./js/config.js": "./js/config.js?v=20260926083431",
-        "./js/fx.js": "./js/fx.js?v=20260926083431",
-        "./js/guest.js": "./js/guest.js?v=20260926083431",
-        "./js/map3d.js": "./js/map3d.js?v=20260926083431"
+        "./js/app.js": "./js/app.js?v=20260926084746",
+        "./js/campus-data.js": "./js/campus-data.js?v=20260926084746",
+        "./js/campus-routes.js": "./js/campus-routes.js?v=20260926084746",
+        "./js/config.js": "./js/config.js?v=20260926084746",
+        "./js/fx.js": "./js/fx.js?v=20260926084746",
+        "./js/guest.js": "./js/guest.js?v=20260926084746",
+        "./js/map3d.js": "./js/map3d.js?v=20260926084746",
+        "./js/upload.js": "./js/upload.js?v=20260926084746"
       }
     }
   </script>
@@ -60,6 +69,9 @@
       <input id="base" type="url" />
       <p class="hint">Mẫu tin nhắn — <code>{ten}</code> sẽ được thay bằng tên khách, <code>{link}</code> bằng đường link:</p>
       <textarea id="tpl" style="min-height:90px"></textarea>
+      <label for="pw" style="margin-top:14px">Mật khẩu upload ảnh (biến <code>UPLOAD_PASSWORD</code> trên Vercel)</label>
+      <input id="pw" type="password" autocomplete="current-password" placeholder="Chỉ cần nếu muốn chọn ảnh từ máy" />
+      <p class="hint">Mật khẩu chỉ được nhớ trên trình duyệt này.</p>
     </section>
 
     <section class="card">
@@ -70,8 +82,13 @@
       </div>
       <div style="margin-top:14px">
         <label for="one-photo">Ảnh khách (tuỳ chọn)</label>
-        <input id="one-photo" placeholder="vd. minh.jpg — file đặt trong images/guests/ — hoặc link https://…" />
-        <p class="hint">Ảnh hiện tròn trên phong bì và thành tấm polaroid trong phần Lời nhắn. Nên dùng ảnh dọc, khoảng 800×1000 px.</p>
+        <div class="photo-row">
+          <img class="thumb" id="one-thumb" alt="" hidden />
+          <input id="one-photo" placeholder="Bấm “Chọn ảnh”, hoặc dán link https://…" />
+          <label class="btn btn--ghost file-btn">Chọn ảnh<input id="one-file" type="file" accept="image/*" /></label>
+        </div>
+        <p class="status" id="one-status"></p>
+        <p class="hint">Ảnh được thu nhỏ rồi lưu lên Vercel Blob với địa chỉ ngẫu nhiên, không nằm trong GitHub. Ảnh hiện tròn trên phong bì và thành tấm polaroid trong phần Lời nhắn.</p>
       </div>
       <div class="actions" style="margin-top:18px">
         <button class="btn" id="one-copy" type="button">Copy link</button>
@@ -100,7 +117,31 @@
   <script type="module">
     import config, { relations } from './js/config.js';
     import { buildLink, cleanName, cleanPhoto } from './js/guest.js';
+    import { uploadPhoto } from './js/upload.js';
     const $ = (s) => document.querySelector(s);
+
+    const PW_KEY = 'grad-invite-upload-pw';
+    try { $('#pw').value = localStorage.getItem(PW_KEY) || ''; } catch { /* bỏ qua */ }
+    $('#pw').addEventListener('change', () => { try { localStorage.setItem(PW_KEY, $('#pw').value); } catch { /* bỏ qua */ } });
+    const photoSrc = (raw) => cleanPhoto(raw);   // đường dẫn thật để xem trước
+
+    // Chọn file → upload → trả về URL (hiển thị trạng thái vào phần tử status)
+    async function pickAndUpload(input, name, statusEl) {
+      const file = input.files && input.files[0];
+      input.value = '';
+      if (!file) return null;
+      statusEl.classList.remove('err');
+      statusEl.textContent = 'Đang thu nhỏ & tải ảnh lên…';
+      try {
+        const url = await uploadPhoto(file, { name, password: $('#pw').value });
+        statusEl.textContent = 'Đã tải ảnh lên ✓';
+        return url;
+      } catch (err) {
+        statusEl.classList.add('err');
+        statusEl.textContent = err.message;
+        return null;
+      }
+    }
 
     const here = new URL('./', location.href);
     $('#base').value = here.protocol.startsWith('http') ? here.href : 'https://your-site.vercel.app/';
@@ -123,8 +164,15 @@
     const refreshOne = () => {
       const url = link($('#one-name').value, $('#one-rel').value, $('#one-photo').value);
       $('#one-out').textContent = url; $('#one-open').href = url;
+      const src = photoSrc($('#one-photo').value);
+      $('#one-thumb').hidden = !src;
+      if (src && $('#one-thumb').getAttribute('src') !== src) $('#one-thumb').src = src;
       return url;
     };
+    $('#one-file').addEventListener('change', async (e) => {
+      const url = await pickAndUpload(e.target, $('#one-name').value, $('#one-status'));
+      if (url) { $('#one-photo').value = url; refreshOne(); }
+    });
     ['input', 'change'].forEach((ev) => { $('#one-name').addEventListener(ev, refreshOne); $('#one-rel').addEventListener(ev, refreshOne); $('#one-photo').addEventListener(ev, refreshOne); $('#base').addEventListener(ev, refreshOne); });
     refreshOne();
     $('#one-copy').onclick = () => copy(refreshOne());
@@ -141,9 +189,20 @@
       const tb = $('#bulk-out tbody');
       tb.replaceChildren(...rows.map((r) => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td></td><td>${r.rel ? relations[r.rel].label : '—'}</td><td></td><td class="link"></td>
+        tr.innerHTML = `<td></td><td>${r.rel ? relations[r.rel].label : '—'}</td>
+          <td style="white-space:nowrap"><img class="thumb-sm" alt="" hidden /><label class="btn btn--ghost mini file-btn">Chọn ảnh<input type="file" accept="image/*" /></label><p class="status"></p></td>
+          <td class="link"></td>
           <td style="white-space:nowrap"><button class="btn mini" data-a="link">Link</button> <button class="btn btn--ghost mini" data-a="msg">Tin nhắn</button></td>`;
-        tr.cells[0].textContent = r.name; tr.cells[2].textContent = r.photo || '—'; tr.cells[3].textContent = r.url;
+        tr.cells[0].textContent = r.name; tr.cells[3].textContent = r.url;
+        const thumb = tr.querySelector('.thumb-sm');
+        const showThumb = () => { const src = photoSrc(r.photo); thumb.hidden = !src; if (src) thumb.src = src; };
+        showThumb();
+        tr.querySelector('input[type=file]').addEventListener('change', async (e) => {
+          const url = await pickAndUpload(e.target, r.name, tr.querySelector('.status'));
+          if (!url) return;
+          r.photo = url; r.url = link(r.name, r.rel, url);
+          tr.cells[3].textContent = r.url; showThumb();
+        });
         tr.querySelector('[data-a=link]').onclick = () => copy(r.url);
         tr.querySelector('[data-a=msg]').onclick = () => copy(message(r.name, r.url), 'Đã copy tin nhắn!');
         return tr;

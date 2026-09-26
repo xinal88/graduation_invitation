@@ -37,6 +37,16 @@ https://<site>/?to=Tên khách&rel=<mã quan hệ>
 
 ### Ảnh riêng cho từng khách
 
+**Cách khuyên dùng — upload từ trang tạo link (không cần push, ảnh không vào GitHub):**
+
+1. Trên Vercel: project → **Storage → Create → Blob** → gắn vào project (tự sinh `BLOB_READ_WRITE_TOKEN`).
+2. **Settings → Environment Variables** → thêm `UPLOAD_PASSWORD` = mật khẩu tuỳ ý → **Redeploy**.
+3. Mở `/tao-link.html`, nhập mật khẩu, bấm **Chọn ảnh** cho từng khách. Ảnh được thu nhỏ còn ~1200 px rồi lưu vào Vercel Blob với URL ngẫu nhiên; link thư mời tự kèm ảnh.
+
+Code: `api/upload.js` (hàm Vercel) + `js/upload.js` (thu nhỏ & gửi ảnh). Chỉ chạy trên bản đã deploy, không chạy với `serve.py`.
+
+**Cách thủ công:**
+
 1. Đặt ảnh vào `images/guests/` (ảnh dọc, khoảng 800×1000 px), ví dụ `minh.jpg`.
 2. Thêm `&p=minh.jpg` vào link: `?to=Anh Minh&rel=anh&p=minh.jpg`. Cũng có thể dùng thẳng một link ảnh `https://…`.
 3. Hoặc khai báo trong `guests` của `config.js` để dùng link ngắn `?g=minh`, không lộ tên và tên file trên URL.
