@@ -174,11 +174,14 @@ rsvpBtn.addEventListener('click', () => {
   try { localStorage.setItem(KEY, '1'); } catch { /* bỏ qua */ }
   markDone();
 });
-if (config.contact.phone) {
-  $('#contact').hidden = false;
-  $('#call-btn').href = `tel:${config.contact.phone}`;
-  $('#zalo-btn').href = `https://zalo.me/${config.contact.phone}`;
-}
+// Liên hệ: số hiển thị dạng 0584 637 826
+const prettyPhone = (n) => n.replace(/\D/g, '').replace(/^(\d{4})(\d{3})(\d+)$/, '$1 $2 $3');
+const { phone, zalo } = config.contact;
+if (phone || zalo) $('#contact').hidden = false;
+if (phone) Object.assign($('#call-btn'), { href: `tel:${phone.replace(/\D/g, '')}`, textContent: `Gọi ${prettyPhone(phone)}` });
+else $('#call-btn').hidden = true;
+if (zalo) Object.assign($('#zalo-btn'), { href: `https://zalo.me/${zalo.replace(/\D/g, '')}`, textContent: `Zalo ${prettyPhone(zalo)}` });
+else $('#zalo-btn').hidden = true;
 
 // ---------- Bản đồ 3D (tải khi gần tới) ----------
 const mapEl = $('#map');

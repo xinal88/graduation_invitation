@@ -34,7 +34,8 @@ export default {
   },
 
   contact: {
-    phone: '0328165088',   // hiện nút Gọi & Zalo; để trống sẽ ẩn
+    phone: '0328165088',   // nút Gọi điện; để trống sẽ ẩn
+    zalo: '0584637826',    // nút Zalo → mở thẻ tài khoản Zalo (zalo.me/<số>); để trống sẽ ẩn
   },
 
   // Ảnh (đặt vào thư mục images/). Để trống sẽ ẩn phần ảnh.
