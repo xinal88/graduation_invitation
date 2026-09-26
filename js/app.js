@@ -39,11 +39,13 @@ $('#rsvp-q').textContent = `${cap(rel.call)} sẽ đến chung vui cùng ${rel.s
 if (config.note) { $('#note-text').textContent = fill(config.note); $('#note').hidden = false; }
 document.title = `${guestName ? guestName + ' · ' : ''}Graduation Invitation · ${c.dateLabel}`;
 
-if (config.portrait) {
-  const img = new Image();
-  img.alt = g.name; img.src = config.portrait;
+// Khung vòm ở hero: ảnh khách (nếu link có) → ảnh của mình → chữ viết tắt
+function showPortrait(src, alt) {
+  if (!src) return;
+  const img = Object.assign(new Image(), { src, alt, decoding: 'async' });
   img.onload = () => { $('#portrait').replaceChildren(img); };
 }
+if (!guestPhoto) showPortrait(config.portrait, g.name);
 if (config.photos.length) {
   $('#gallery').hidden = false;
   $('#rsvp-no').textContent = '05';
@@ -63,11 +65,12 @@ if (guestPhoto) {
   const mk = () => Object.assign(new Image(), { src: guestPhoto, alt: guestName || 'Ảnh khách mời', decoding: 'async' });
   const img = mk();
   img.onload = () => {
+    showPortrait(guestPhoto, guestName || 'Ảnh khách mời');
     $('#env-avatar').replaceChildren(mk());
     $('#env-avatar').hidden = false;
     fx?.refresh?.();
   };
-  img.onerror = () => { pol.hidden = true; $('.message__grid').classList.remove('has-photo'); fx?.refresh?.(); };
+  img.onerror = () => { showPortrait(config.portrait, g.name); pol.hidden = true; $('.message__grid').classList.remove('has-photo'); fx?.refresh?.(); };
   $('.polaroid__img').replaceChildren(img);
 }
 
