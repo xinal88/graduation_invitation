@@ -1,5 +1,5 @@
 // Đọc / tạo tham số khách trong URL:
-//   ?to=Tên&rel=anh&p=minh.jpg     (p = file trong images/guests/, hoặc link https)
+//   ?to=Tên&rel=anh&p=minh.jpg     (p = file trong images/guests/, link https, hoặc @mã ảnh trong Vercel Blob)
 //   ?g=minh                        (mã khách khai báo sẵn trong config.guests)
 const MAX = 48;
 export const GUEST_DIR = 'images/guests/';
@@ -15,6 +15,7 @@ export function cleanPhoto(raw) {
   const s = (raw || '').trim();
   if (!s) return '';
   if (/^https:\/\/[^\s"'<>()]+$/i.test(s)) return s;
+  if (/^@[\w-]+\.(jpe?g|png|webp)$/i.test(s)) return `api/photo?p=${encodeURIComponent('guests/' + s.slice(1))}`; // ảnh trong kho Blob private
   if (!/^[\w-][\w.-]*$/.test(s)) return '';            // chỉ tên file, không có thư mục
   return GUEST_DIR + (/\.[a-z0-9]{3,4}$/i.test(s) ? s : `${s}.jpg`);
 }

@@ -1,4 +1,5 @@
-// POST /api/upload — nhận 1 ảnh (đã thu nhỏ ở trình duyệt), lưu vào Vercel Blob, trả về URL công khai.
+// POST /api/upload — nhận 1 ảnh (đã thu nhỏ ở trình duyệt), lưu vào Vercel Blob.
+// Kho Private: trả về mã "@<tên-file>" → khách xem qua /api/photo. Kho Public: trả về URL trực tiếp.
 // Cần trên Vercel: Storage → Blob gắn vào project (tự có BLOB_READ_WRITE_TOKEN) và biến UPLOAD_PASSWORD.
 import { put } from '@vercel/blob';
 import { timingSafeEqual, createHash } from 'node:crypto';
@@ -45,18 +46,25 @@ export async function POST(request) {
   if (!type) return json(415, { error: 'Chỉ nhận ảnh JPG, PNG hoặc WebP.' });
 
   const name = slug(new URL(request.url).searchParams.get('name'));
-  try {
-    const blob = await put(`guests/${name}.${TYPES[type]}`, buf, {
-      access: 'public',
-      addRandomSuffix: true,          // URL ngẫu nhiên, không đoán được
-      contentType: type,
-      cacheControlMaxAge: 60 * 60 * 24 * 30,
-    });
-    return json(200, { url: blob.url });
-  } catch (err) {
-    console.error(err);
-    return json(500, { error: 'Lưu ảnh thất bại: ' + (err && err.message ? err.message : 'không rõ lỗi') });
+  const opts = (access) => ({
+    access,
+    addRandomSuffix: true,            // tên file ngẫu nhiên, không đoán được
+    contentType: type,
+    cacheControlMaxAge: 60 * 60 * 24 * 30,
+  });
+  const path = `guests/${name}.${TYPES[type]}`;
+  let lastErr;
+  for (const access of ['private', 'public']) {   // thử theo kiểu kho
+    try {
+      const blob = await put(path, buf, opts(access));
+      if (access === 'public') return json(200, { url: blob.url });
+      return json(200, { url: '@' + blob.pathname.replace(/^guests\//, '') });
+    } catch (err) {
+      lastErr = err;
+      console.error(`put(${access})`, err && err.message);
+    }
   }
+  return json(500, { error: 'Lưu ảnh thất bại: ' + (lastErr && lastErr.message ? lastErr.message : 'không rõ lỗi') });
 }
 
 export function GET() {
