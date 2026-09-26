@@ -12,11 +12,11 @@ export default {
 
   ceremony: {
     // Giờ Việt Nam (+07:00). Sửa nếu ca lễ của bạn khác.
-    startIso: '2026-09-27T09:30:00+07:00',
+    startIso: '2026-09-27T10:00:00+07:00',
     endIso: '2026-09-27T11:30:00+07:00',
     dateLabel: '27.09.2026',
     weekdayLabel: 'Chủ nhật',
-    timeLabel: '9:30 — 11:30',
+    timeLabel: '10:00 — 11:30',
   },
 
   venue: {
